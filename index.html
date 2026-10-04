@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PE Wealth — Personal Wealth Journal &amp; Investment Portfolio Analyzer</title>
+<meta name="description" content="PE Wealth is a private, offline-first wealth journal and investment portfolio analyzer for iOS. Track holdings, transactions, cashflow, and goals — all stored locally on your device." />
+<meta name="theme-color" content="#0B0F14" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2300D4A8'/%3E%3Ctext x='50%25' y='54%25' font-family='-apple-system,Helvetica' font-size='28' font-weight='800' text-anchor='middle' fill='%230B0F14'%3EPE%3C/text%3E%3C/svg%3E" />
+<style>
+  :root {
+    --bg: #0B0F14;
+    --bg-2: #11161D;
+    --card: #161D26;
+    --line: #1F2731;
+    --text: #E8EDF2;
+    --muted: #98A2B3;
+    --accent: #00D4A8;
+    --accent-2: #7AB7FF;
+    --warn: #F5A524;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; line-height: 1.6; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+  header.nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px);
+    background: rgba(11,15,20,0.75); border-bottom: 1px solid var(--line); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 0.2px; }
+  .brand-mark { width: 28px; height: 28px; border-radius: 8px; background: var(--accent);
+    display: grid; place-items: center; color: #0B0F14; font-weight: 900; font-size: 13px; }
+  nav ul { display: flex; gap: 22px; list-style: none; padding: 0; margin: 0; }
+  nav a { color: var(--muted); font-size: 14px; }
+  nav a:hover { color: var(--text); text-decoration: none; }
+
+  .hero { padding: 80px 0 60px; }
+  .eyebrow { display: inline-block; padding: 6px 12px; border: 1px solid var(--line);
+    border-radius: 999px; color: var(--muted); font-size: 12px; letter-spacing: 0.6px;
+    text-transform: uppercase; margin-bottom: 20px; }
+  h1 { font-size: 56px; line-height: 1.05; margin: 0 0 18px; letter-spacing: -0.02em; }
+  h1 .accent { color: var(--accent); }
+  .lead { font-size: 19px; color: var(--muted); max-width: 680px; margin: 0 0 28px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-block; padding: 13px 22px; border-radius: 12px; font-weight: 600;
+    font-size: 15px; transition: transform .12s ease; }
+  .btn-primary { background: var(--accent); color: #0B0F14; }
+  .btn-primary:hover { text-decoration: none; transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  .btn-ghost:hover { text-decoration: none; border-color: #2C3540; }
+
+  .phone-mock { margin-top: 48px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .phone { background: var(--card); border: 1px solid var(--line); border-radius: 22px;
+    padding: 14px; aspect-ratio: 9/19; display: flex; flex-direction: column; }
+  .phone .screen { flex: 1; background: var(--bg-2); border-radius: 14px; padding: 14px;
+    display: flex; flex-direction: column; gap: 10px; }
+  .skel { background: linear-gradient(90deg, #1B232E, #232C38, #1B232E);
+    background-size: 200% 100%; animation: shimmer 6s linear infinite; border-radius: 8px; }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+  .row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); }
+  .big-num { font-size: 22px; font-weight: 700; color: var(--text); }
+  .donut { width: 70px; height: 70px; border-radius: 50%; background:
+      conic-gradient(var(--accent) 0 35%, var(--accent-2) 35% 60%, var(--warn) 60% 80%, #2A3340 80% 100%);
+    mask: radial-gradient(circle, transparent 55%, black 56%);
+    -webkit-mask: radial-gradient(circle, transparent 55%, black 56%); }
+  .bar { height: 8px; background: #222B36; border-radius: 4px; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); }
+
+  section { padding: 72px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 34px; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 36px; max-width: 720px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+  .card h3 { margin: 0 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(0,212,168,0.12);
+    color: var(--accent); display: grid; place-items: center; font-weight: 800; margin-bottom: 14px; }
+
+  .feature-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+  .panel h4 { margin: 0 0 6px; font-size: 16px; }
+  .panel p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+
+  .cta-band { padding: 56px 0; text-align: center; border-top: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(0,212,168,0.06), transparent); }
+  .cta-band h2 { margin-bottom: 14px; }
+
+  footer { border-top: 1px solid var(--line); padding: 36px 0 48px; color: var(--muted); font-size: 14px; }
+  .foot-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .foot-links { display: flex; gap: 18px; flex-wrap: wrap; }
+
+  @media (max-width: 860px) {
+    h1 { font-size: 40px; }
+    .grid { grid-template-columns: 1fr; }
+    .feature-2 { grid-template-columns: 1fr; }
+    .phone-mock { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 520px) {
+    nav ul { display: none; }
+    .phone-mock { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="container nav-inner">
+    <div class="brand">
+      <span class="brand-mark">PE</span>
+      <span>PE Wealth</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="support.html">Support</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow">iOS · Offline-first · No account</span>
+    <h1>A calm, honest place<br/>to think about <span class="accent">your money.</span></h1>
+    <p class="lead">
+      PE Wealth is a private wealth journal and portfolio analyzer for investors who want a clear,
+      complete record of every position, transaction, contribution, and goal — without connecting
+      to a brokerage, exchange, or wallet.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://apps.apple.com" target="_blank" rel="noopener">Download on the App Store</a>
+      <a class="btn btn-ghost" href="#features">Explore features</a>
+    </div>
+
+    <div class="phone-mock" aria-hidden="true">
+      <div class="phone"><div class="screen">
+        <div class="row"><span>Net Worth</span><span>USD</span></div>
+        <div class="big-num">$248,910</div>
+        <div class="skel" style="height:10px"></div>
+        <div class="skel" style="height:80px; border-radius:12px"></div>
+        <div class="row"><span>Allocation</span><span>4 buckets</span></div>
+        <div style="display:flex; gap:14px; align-items:center;">
+          <div class="donut"></div>
+          <div style="display:flex; flex-direction:column; gap:6px; font-size:12px; color:var(--muted); flex:1;">
+            <span>Equities 35%</span><span>Bonds 25%</span><span>Crypto 20%</span><span>Cash 20%</span>
+          </div>
+        </div>
+      </div></div>
+      <div class="phone"><div class="screen">
+        <div class="row"><span>Holdings</span><span>12</span></div>
+        <div class="big-num">AAPL</div>
+        <div class="skel" style="height:10px"></div>
+        <div class="row"><span>Cost basis</span><span>$11,240</span></div>
+        <div class="row"><span>Avg. cost</span><span>$172.31</span></div>
+        <div class="row"><span>Current</span><span>$214.05</span></div>
+        <div class="bar"><i style="width:78%"></i></div>
+        <div class="row" style="margin-top:6px;"><span>Unrealized</span><span style="color:var(--accent)">+24.2%</span></div>
+        <div class="skel" style="height:6px; margin-top:auto"></div>
+      </div></div>
+      <div class="phone"><div class="screen">
+        <div class="row"><span>Journal</span><span>This month</span></div>
+        <div class="row"><span>Buy · VTI</span><span>−$1,200</span></div>
+        <div class="skel" style="height:8px"></div>
+        <div class="row"><span>Dividend · SCHD</span><span style="color:var(--accent)">+$184</span></div>
+        <div class="skel" style="height:8px"></div>
+        <div class="row"><span>Deposit · Cash</span><span style="color:var(--accent)">+$3,000</span></div>
+        <div class="skel" style="height:8px"></div>
+        <div class="row"><span>Goal · Emergency fund</span><span>68%</span></div>
+        <div class="bar"><i style="width:68%"></i></div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+    <h2>Designed as a journal, not a trading platform.</h2>
+    <p class="sub">Everything you record stays on your device. No cloud sync, no live feeds, no execution — just clear numbers and an honest record of your decisions.</p>
+    <div class="grid">
+      <div class="card"><div class="icon">◆</div><h3>Dashboard that breathes</h3><p>Total net worth, interactive allocation donut, tap-and-drag line chart, and monthly cashflow in one focused view.</p></div>
+      <div class="card"><div class="icon">◇</div><h3>Per-position detail</h3><p>Every holding shows cost basis, average cost, current price, and unrealized gain or loss — journal framing, no ambiguity.</p></div>
+      <div class="card"><div class="icon">◈</div><h3>Journal of decisions</h3><p>Record buys, sells, dividends, deposits, withdrawals, interest, and fees — with photo attachments and searchable notes.</p></div>
+      <div class="card"><div class="icon">◉</div><h3>Goals with deadlines</h3><p>Track savings targets with progress bars and due dates. See at a glance what is on track and what needs attention.</p></div>
+      <div class="card"><div class="icon">▲</div><h3>Insights, not advice</h3><p>Diversification metrics, concentration risk, and longer-term net worth trends through custom-built, non-third-party charts.</p></div>
+      <div class="card"><div class="icon">●</div><h3>You own your data</h3><p>Export or reset everything at any time. No account, no login, no cloud, no notifications, no in-app purchases.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="container">
+    <h2>How PE Wealth works.</h2>
+    <p class="sub">A quiet workflow built around clarity, not alerts.</p>
+    <div class="feature-2">
+      <div class="panel">
+        <h4>1. Capture</h4>
+        <p>Add positions and transactions as they happen. Attach a photo of a receipt or statement. Write a note explaining the why.</p>
+        <div class="skel" style="height:90px"></div>
+      </div>
+      <div class="panel">
+        <h4>2. See</h4>
+        <p>Watch net worth, allocation, and cashflow update in real time. Compare months, quarters, and years on the same canvas.</p>
+        <div class="legend">
+          <span><span class="dot" style="background:var(--accent)"></span>Net worth</span>
+          <span><span class="dot" style="background:var(--accent-2)"></span>Cost basis</span>
+          <span><span class="dot" style="background:var(--warn)"></span>Cashflow</span>
+        </div>
+        <div class="skel" style="height:90px; margin-top:8px"></div>
+      </div>
+      <div class="panel">
+        <h4>3. Reflect</h4>
+        <p>Review concentration risk, diversification, and goal progress. The journal framing turns raw numbers into decisions you can revisit.</p>
+        <div class="skel" style="height:90px"></div>
+      </div>
+      <div class="panel">
+        <h4>4. Own</h4>
+        <p>Export everything as a portable archive. Reset the app to a clean slate whenever you want. Nothing is locked in.</p>
+        <div class="skel" style="height:90px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="container">
+    <h2>Privacy, by construction.</h2>
+    <p class="sub">PE Wealth is offline-first. The data you record never leaves your device unless you explicitly export it.</p>
+    <div class="grid">
+      <div class="card"><h3>No account</h3><p>No signup, no email, no login. Open the app and start writing.</p></div>
+      <div class="card"><h3>No cloud sync</h3><p>There is no remote server holding your holdings, transactions, or notes.</p></div>
+      <div class="card"><h3>No live market feeds</h3><p>Prices are entered by you. Nothing connects to brokerages, exchanges, or wallets.</p></div>
+      <div class="card"><h3>No tracking</h3><p>No analytics SDKs, no third-party trackers, no notifications, no in-app purchases.</p></div>
+      <div class="card"><h3>Photos stay local</h3><p>Camera and photo library permissions are used only to attach images to your transactions.</p></div>
+      <div class="card"><h3>You can reset</h3><p>A built-in reset clears all local data. Export first if you want a copy.</p></div>
+    </div>
+    <p style="margin-top:24px;"><a href="privacy.html">Read the full Privacy Policy →</a></p>
+  </div>
+</section>
+
+<div class="cta-band">
+  <div class="container">
+    <h2>Start your wealth journal.</h2>
+    <p class="sub" style="margin:0 auto 22px;">A calm, honest place to think about your money — built for investors who want clarity, not noise.</p>
+    <a class="btn btn-primary" href="https://apps.apple.com" target="_blank" rel="noopener">Download on the App Store</a>
+  </div>
+</div>
+
+<footer>
+  <div class="container foot-row">
+    <div>© 2026 PE Wealth. All rights reserved.</div>
+    <div class="foot-links">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms of Use</a>
+      <a href="support.html">Support</a>
+      <a href="mailto:becipora79@gmail.com">becipora79@gmail.com</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
